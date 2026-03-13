@@ -8,4 +8,4 @@
 2. 2. I am taking STATS 220 because I am on an exchange from the UK and they don't offer anything like this as part of my course over there
 
 - 
-- A meme that captures how I currently feel about my university studies is ![]([https://c.tenor.com/8druEACXtX8AAAAd/tenor.gif])
+- A meme that captures how I currently feel about my university studies is ![]([https://c.tenor.com/8druEACXtX8AAAAd/tenor.gif](https://media1.tenor.com/m/0wkGHfzn2FoAAAAC/shine-text-share-the-flip-side.gif))
