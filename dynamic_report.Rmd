@@ -1,0 +1,100 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+```
+
+```{css}
+body{
+  font-family: Arial
+}
+```
+
+## Observational Analysis of Sudoku Puzzles
+
+This report will explore data collected from a number of sudoku puzzles. The data being analysed will include the time taken to complete each puzzle, the number of values given at the start, the difficulty of each puzzle according to the source and how difficult each puzzle personally was for the respondent.
+
+```{r}
+library(tidyverse)
+
+logged_data <- read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vQudMdsckNOPNjJTXrHiHGtI3UD3Y10ZI4nAsAasN6q-p_9D9DC7KZNWI0CTLPO5yFNEMFCTLqSsAyJ/pub?gid=1677705977&single=true&output=csv')
+
+latest_data <- logged_data %>% select(-Timestamp) %>% 
+                  rename(time_taken=1,
+                         numbers_given=2,
+                         difficulty_source=3,
+                         difficulty_personal=4)
+```
+
+
+```{r}
+#determine number of survey responses
+num <- latest_data$time_taken %>% length()
+
+##minimum, maximum and mean values for the time taken in minutes
+min_time <- latest_data$time_taken %>% min()
+max_time <- latest_data$time_taken %>% max()
+mean_time <- latest_data$time_taken %>% mean()
+
+#convert mean time into minutes and seconds
+mins <- floor(mean_time)
+secs <- round((mean_time-mins)*60,0)
+
+#minimum and maximum numbers given at the start of the puzzle
+min_num <- latest_data$numbers_given %>% min()
+max_num <- latest_data$numbers_given %>% max()
+
+```
+
+There were `r num` responses to this survey.  
+The mean time taken to complete a sudoku puzzle was `r mins` minutes and `r secs` seconds with the shortest time being `r min_time` minutes and the longest time being `r max_time` minutes.
+
+The smallest number of values given at the start of a sudoku was `r min_num` whilst the largest number of values given was `r max_num`.
+
+```{r, fig.width = 7, fig.height = 5}
+#personal difficulty compared to time taken bar chart
+ggplot(latest_data) +
+  geom_bar(aes(y = difficulty_personal,
+               fill = factor(time_taken))) +
+  scale_fill_viridis_d(option = 'plasma') +
+  labs(title = 'Personal Difficulty Compared with Time Taken',
+       x = 'Number of Sudokus',
+       y = 'Personal Difficulty Rating',
+       fill = 'Time Taken (mins)')
+```
+
+From the bar chart above, we can observe the general relationship between the personal difficulty ratings and the time taken to complete the puzzle. The chart suggests that higher personal difficulty ratings tend to correspond with longer completion times. This aligns with expectations as more challenging puzzles would typically require more time to solve.
+
+```{r, fig.width = 7, fig.height = 5}
+#personal difficulty compared to numbers given bar chart
+ggplot(latest_data) +
+  geom_bar(aes(y = difficulty_personal,
+               fill = factor(numbers_given))) +
+  scale_fill_viridis_d(option = 'viridis') +
+  labs(title = 'Personal Difficulty Compared to Numbers Given',
+       x = 'Number of Sudokus',
+       y = 'Personal Difficulty Rating',
+       fill = 'Numbers Given')
+```
+
+The bar chart above explores the relationship between the number of values given at the start of a puzzle and the respondent's perceived difficulty. We can see that puzzles with fewer numbers provided are generally perceived as more difficult whilst puzzles with more given numbers generally received lower personal difficulty ratings. This implies that the amount of information provided at the beginning somewhat impacts the difficulty of the puzzle.
+
+```{r, fig.width = 7, fig.height = 5}
+#personal difficulty compared to source difficulty bar chart
+ggplot(latest_data) +
+  geom_bar(aes(y = difficulty_personal,
+               fill = factor(difficulty_source))) +
+  scale_fill_manual(values = c('#EDAE49', '#D1495B', '#00798C')) +
+  labs(title = 'Personal Difficulty Compared to Difficulty According to Source',
+       x = 'Number of Sudokus',
+       y = 'Personal Difficulty Rating',
+       fill = 'Source Difficulty')
+```
+
+The bar chart above compares the difficulty ratings provided by the source with the personal difficulty ratings of the participants. Overall, there is a noticeable similarity between the two, as higher source difficulty levels are generally associated with higher personal ratings. This indicates that source difficulty ratings are reasonably accurate in reflecting perceived difficulty. 
+
+However, there is some variation between the two types of ratings. For instance, some puzzles have been classified as 'hard' by the source but were rated lower in difficulty by participants.
